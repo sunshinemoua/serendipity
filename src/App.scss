@@ -1,3 +1,34 @@
+//ENTRY FORM
+.entry-form-wrapper {
+  width: 600px;
+  height: 600px;
+  label {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// NAVBAR
+.navbar-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 2rem;
+}
+.navlinks {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 40%;
+
+  .link {
+    color: rgb(144, 93, 102);
+    font-size: 1.15rem;
+    text-decoration: none;
+  }
+}
+
+// FORM SIGN UP
 .form-wrapper {
   border-radius: 16px;
   margin: 10% 30%;
