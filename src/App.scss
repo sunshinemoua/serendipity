@@ -1,11 +1,65 @@
-//ENTRY FORM
-.entry-form-wrapper {
-  width: 600px;
-  height: 600px;
+// PAGE WRAPPER
+.page-wrapper {
+  height: 100vh;
+  background-color: rgb(251, 223, 240);
+
+  .form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    margin: 10% 30%;
+    padding: 3rem 2rem;
+    background-color: rgb(162, 120, 181);
+  }
+
   label {
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    color: rgb(255, 241, 233);
+    font-weight: bold;
   }
+
+  input,
+  textarea {
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  button {
+    background-color: rgb(255, 241, 233);
+    color: rgb(56, 20, 96);
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+
+    &:hover {
+      background-color: rgb(56, 20, 96);
+      color: rgb(255, 241, 233);
+      cursor: pointer;
+    }
+  }
+}
+
+//ENTRY FORM
+
+h2 {
+  display: flex;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgb(255, 241, 233);
 }
 
 // NAVBAR
@@ -13,59 +67,38 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: 2rem;
-}
-.navlinks {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 40%;
+  margin: 0 2rem;
+
+  h1 {
+    color: rgb(162, 120, 181);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .navlinks {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 40%;
+  }
 
   .link {
-    color: rgb(144, 93, 102);
+    color: rgb(162, 120, 181);
     font-size: 1.15rem;
+    font-weight: bold;
     text-decoration: none;
   }
 }
 
 // FORM SIGN UP
-.form-wrapper {
-  border-radius: 16px;
-  margin: 10% 30%;
-  padding: 2rem;
-  background-color: rgb(246, 196, 205);
-
-  label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.form-wrapper sign-up {
+  height: 350px;
+  width: 400px;
 
   h1 {
     margin: 0 1rem 2rem;
   }
 
-  label {
-    color: rgb(169, 113, 123);
-    font-weight: bold;
-  }
-
   input {
-    padding: 0.5rem;
-    border: none;
-    border-radius: 4px;
-  }
-
-  button {
-    background-color: rgb(183, 120, 132);
-    color: #fefefe;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem;
-
-    &:hover {
-      background-color: rgb(140, 91, 100);
-    }
+    width: 50%;
   }
 }

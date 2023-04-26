@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./App.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { addEntry } from "./redux/entrySlice";
 
 const signUpSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -14,7 +16,10 @@ const signUpSchema = yup.object().shape({
 });
 
 const entrySchema = yup.object().shape({
-  date: yup.date().max(new Date()).required("Please enter a valid date"),
+  date: yup
+    .date()
+    .max(new Date(), "Cannot use future date!")
+    .required("Please enter a valid date"),
   feeling: yup.string().required("Please enter your feeling"),
   entry: yup.string().required("Please enter an entry"),
 });
@@ -47,17 +52,23 @@ const Entries = () => {
     resolver: yupResolver(entrySchema),
   });
 
+  const entry = useSelector((state) => state.entries);
+  const dispatch = useDispatch();
+
   const onSubmit = (data, event) => {
+    dispatch(addEntry(data));
     console.log(data);
     alert("thanks for submitting");
     event.target.reset();
   };
+  console.log(entry);
 
   return (
-    <div className="entry-wrapper">
-      <div className="entry-form-wrapper">
+    <div className="page-wrapper">
+      <div className="form-wrapper">
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>
+            <h2>What's on your mind?</h2>
             <input type="date" {...register("date")} placeholder="Date" />
             <p>{errors.date?.message}</p>
             <input
@@ -69,7 +80,7 @@ const Entries = () => {
             <textarea
               type="text"
               {...register("entry")}
-              placeholder="What's on your mind?"
+              placeholder="Say something..."
               rows="10"
             />
             <p>{errors.entry?.message}</p>
@@ -83,7 +94,7 @@ const Entries = () => {
 
 const PastEntries = () => {
   return (
-    <div>
+    <div className="page-wrapper">
       <NavBar />
       PAST ENTRIES
     </div>
@@ -106,9 +117,9 @@ const Form = () => {
   };
 
   return (
-    <div>
+    <div className="page-wrapper">
       <NavBar />
-      <div className="form-wrapper">
+      <div className="form-wrapper sign-up">
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>
             <h1> Sign Up </h1>
@@ -128,7 +139,7 @@ const Form = () => {
 
 const Home = () => {
   return (
-    <div>
+    <div className="page-wrapper">
       <NavBar />
       <Entries />
     </div>
