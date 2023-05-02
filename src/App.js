@@ -4,7 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { addEntry } from "./redux/entrySlice";
+import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
+import { v4 as uuid } from "uuid";
 
 const signUpSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -43,7 +44,29 @@ const NavBar = () => {
   );
 };
 
-const Entries = () => {
+const EntriesList = ({ entry, deleteHandler }) => {
+  const mappedEntries = entry.map((item) => {
+    return (
+      <div key={item.id}>
+        <div className="item-wrapper">
+          <li>
+            I'm feeling <span>{item.feeling}</span> because . . .
+            <p>{item.entry}</p>
+          </li>
+          {deleteHandler !== null && (
+            <button className="delete-btn" onClick={() => deleteHandler(item)}>
+              Delete
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  });
+
+  return <div>{mappedEntries}</div>;
+};
+
+const Entries = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
   const {
     register,
     handleSubmit,
@@ -52,16 +75,11 @@ const Entries = () => {
     resolver: yupResolver(entrySchema),
   });
 
-  const entry = useSelector((state) => state.entries);
-  const dispatch = useDispatch();
-
   const onSubmit = (data, event) => {
+    data.id = uuid();
     dispatch(addEntry(data));
-    console.log(data);
-    alert("thanks for submitting");
     event.target.reset();
   };
-  console.log(entry);
 
   return (
     <div className="page-wrapper">
@@ -84,19 +102,35 @@ const Entries = () => {
               rows="10"
             />
             <p>{errors.entry?.message}</p>
-            <button>Add</button>
+            <div className="btn-wrapper">
+              <button>Add</button>
+              {entry.length > 0 && (
+                <button onClick={deleteAllHandler}>Delete All Entries</button>
+              )}
+            </div>
           </label>
         </form>
+
+        <EntriesList entry={entry} deleteHandler={deleteHandler} />
       </div>
     </div>
   );
 };
 
-const PastEntries = () => {
+const PastEntries = ({ entry, deleteHandler, deleteAllHandler }) => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      PAST ENTRIES
+      <div className="form-wrapper">
+        <h2> All Entries</h2>
+        {entry.length > 0 ? (
+          <button onClick={deleteAllHandler}>Delete All Entries</button>
+        ) : (
+          <p>No entries yet!</p>
+        )}
+
+        <EntriesList entry={entry} deleteHandler={deleteHandler} />
+      </div>
     </div>
   );
 };
@@ -137,21 +171,58 @@ const Form = () => {
   );
 };
 
-const Home = () => {
+const Home = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <Entries />
+      <Entries
+        entry={entry}
+        dispatch={dispatch}
+        deleteHandler={deleteHandler}
+        deleteAllHandler={deleteAllHandler}
+      />
     </div>
   );
 };
 
 function App() {
+  const entry = useSelector((state) => state.entries);
+  const dispatch = useDispatch();
+
+  const deleteHandler = (id) => {
+    const entryCopy = [...entry, id];
+    const filteredEntries = entryCopy.filter((item) => item !== id);
+    dispatch(deleteEntry(filteredEntries));
+  };
+
+  const deleteAllHandler = () => {
+    dispatch(deleteAllEntries());
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/my-entries" element={<PastEntries />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              entry={entry}
+              dispatch={dispatch}
+              deleteHandler={deleteHandler}
+              deleteAllHandler={deleteAllHandler}
+            />
+          }
+        />
+        <Route
+          path="/my-entries"
+          element={
+            <PastEntries
+              entry={entry}
+              deleteHandler={deleteHandler}
+              deleteAllHandler={deleteAllHandler}
+            />
+          }
+        />
         <Route path="/sign-up" element={<Form />} />
       </Routes>
     </BrowserRouter>

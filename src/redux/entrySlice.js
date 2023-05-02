@@ -1,20 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const entriesList =
+  localStorage.getItem("entries") !== null
+    ? JSON.parse(localStorage.getItem("entries"))
+    : [];
+
+const setItemFunc = (entriesList) => {
+  localStorage.setItem("entries", JSON.stringify(entriesList));
+};
+
 export const entrySlice = createSlice({
   name: "entry",
   initialState: {
-    entries: [],
-    submission: "",
+    entries: entriesList,
   },
 
   reducers: {
     addEntry: (state, { payload }) => {
       state.entries = [payload, ...state.entries];
-      console.log(payload);
-      //   console.log(state.entries);
+      setItemFunc(state.entries.map((item) => item));
+    },
+    deleteEntry: (state, { payload }) => {
+      state.entries = payload;
+
+      localStorage.setItem(
+        "entries",
+        JSON.stringify(state.entries.map((item) => item))
+      );
+    },
+
+    deleteAllEntries: (state) => {
+      state.entries = [];
+      localStorage.removeItem("entries");
     },
   },
 });
 
-export const { testconsole, addEntry } = entrySlice.actions;
+export const { addEntry, deleteEntry, deleteAllEntries } = entrySlice.actions;
 export default entrySlice.reducer;
