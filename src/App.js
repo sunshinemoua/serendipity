@@ -6,11 +6,18 @@ import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
 import { v4 as uuid } from "uuid";
-import { addUser } from "./redux/usersSlice";
+import { addUser, checkUser } from "./redux/usersSlice";
 
 const signUpSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last name is required"),
+  email: yup
+    .string()
+    .email("Please enter a valid email address")
+    .required("Please enter a valid email address"),
+});
+
+const signInSchema = yup.object().shape({
   email: yup
     .string()
     .email("Please enter a valid email address")
@@ -40,31 +47,95 @@ const NavBar = () => {
         <NavLink className="link" to="/sign-up">
           Sign Up
         </NavLink>
+        <NavLink className="link" to="/sign-in">
+          Sign In
+        </NavLink>
       </div>
     </div>
   );
 };
-
-const EntriesList = ({ entry, deleteHandler }) => {
-  const mappedEntries = entry.map((item) => {
-    return (
-      <div key={item.id}>
-        <div className="item-wrapper">
-          <li>
-            I'm feeling <span>{item.feeling}</span> because . . .
-            <p>{item.entry}</p>
-          </li>
-          {deleteHandler !== null && (
-            <button className="delete-btn" onClick={() => deleteHandler(item)}>
-              Delete
-            </button>
-          )}
-        </div>
-      </div>
-    );
+const Form = ({ header, formSchema, action }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(formSchema),
   });
 
-  return <div>{mappedEntries}</div>;
+  const onSubmit = (data) => {
+    action(data);
+    reset();
+  };
+
+  return (
+    <div className="form-wrapper sign-up">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <label>
+            <h1> {header} </h1>
+            {formSchema === signUpSchema ? (
+              <div>
+                {" "}
+                <input
+                  type="text"
+                  {...register("firstName")}
+                  placeholder="First Name"
+                />
+                <p>{errors.firstName?.message}</p>
+                <input
+                  type="text"
+                  {...register("lastName")}
+                  placeholder="Last Name"
+                />
+                <p>{errors.lastName?.message}</p>
+                <input type="text" {...register("email")} placeholder="Email" />
+                <p>{errors.email?.message}</p>
+                <button>Submit</button>
+              </div>
+            ) : (
+              <div>
+                <input type="text" {...register("email")} placeholder="Email" />
+                <p>{errors.email?.message}</p>
+                <button>Log In</button>
+              </div>
+            )}
+          </label>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const SignIn = () => {
+  const dispatch = useDispatch();
+
+  const action = (data) => {
+    dispatch(checkUser(data));
+  };
+
+  return (
+    <div className="page-wrapper">
+      <NavBar />
+      <Form header="Sign In" formSchema={signInSchema} action={action} />
+    </div>
+  );
+};
+
+const SignUp = () => {
+  const dispatch = useDispatch();
+
+  const action = (data) => {
+    dispatch(addUser(data));
+  };
+
+  return (
+    <div className="page-wrapper">
+      <NavBar />
+      <Form header="Sign Up" formSchema={signUpSchema} action={action} />
+    </div>
+  );
 };
 
 const Entries = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
@@ -137,51 +208,26 @@ const PastEntries = ({ entry, deleteHandler, deleteAllHandler }) => {
   );
 };
 
-const Form = () => {
-  const user = useSelector((state) => state.user.users);
-  const dispatch = useDispatch();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
-    resolver: yupResolver(signUpSchema),
+const EntriesList = ({ entry, deleteHandler }) => {
+  const mappedEntries = entry.map((item) => {
+    return (
+      <div key={item.id}>
+        <div className="item-wrapper">
+          <li>
+            I'm feeling <span>{item.feeling}</span> because . . .
+            <p>{item.entry}</p>
+          </li>
+          {deleteHandler !== null && (
+            <button className="delete-btn" onClick={() => deleteHandler(item)}>
+              Delete
+            </button>
+          )}
+        </div>
+      </div>
+    );
   });
 
-  const onSubmit = (data) => {
-    dispatch(addUser(data));
-    reset();
-  };
-
-  return (
-    <div className="page-wrapper">
-      <NavBar />
-      <div className="form-wrapper sign-up">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label>
-            <h1> Sign Up </h1>
-            <input
-              type="text"
-              {...register("firstName")}
-              placeholder="First Name"
-            />
-            <p>{errors.firstName?.message}</p>
-            <input
-              type="text"
-              {...register("lastName")}
-              placeholder="Last Name"
-            />
-            <p>{errors.lastName?.message}</p>
-            <input type="text" {...register("email")} placeholder="Email" />
-            <p>{errors.email?.message}</p>
-            <button>Submit</button>
-          </label>
-        </form>
-      </div>
-    </div>
-  );
+  return <div>{mappedEntries}</div>;
 };
 
 const Home = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
@@ -239,8 +285,9 @@ function App() {
         />
         <Route
           path="/sign-up"
-          element={<Form user={user} dispatch={dispatch} />}
+          element={<SignUp user={user} dispatch={dispatch} />}
         />
+        <Route path="sign-in" element={<SignIn />} />
       </Routes>
     </BrowserRouter>
   );

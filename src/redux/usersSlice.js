@@ -27,13 +27,24 @@ export const usersSlice = createSlice({
       } else {
         const newUsers = [payload, ...state.users];
         state.users = newUsers;
-
         setUserFunc(state.users);
-        console.log(newUsers);
+        alert("Thanks for signing up");
+      }
+    },
+
+    checkUser: (state, { payload }) => {
+      const existingUserEmail = state.users.map((user) => user.email);
+      const isEmailExist = existingUserEmail.find(
+        (email) => email === payload.email
+      );
+      if (isEmailExist) {
+        alert("access granted");
+      } else {
+        alert("email not found, please create account");
       }
     },
   },
 });
 
-export const { addUser } = usersSlice.actions;
+export const { addUser, checkUser } = usersSlice.actions;
 export const userReducer = usersSlice.reducer;
