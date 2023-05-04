@@ -6,6 +6,7 @@ import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
 import { v4 as uuid } from "uuid";
+import { addUser } from "./redux/usersSlice";
 
 const signUpSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -71,14 +72,15 @@ const Entries = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(entrySchema),
   });
 
-  const onSubmit = (data, event) => {
+  const onSubmit = (data) => {
     data.id = uuid();
     dispatch(addEntry(data));
-    event.target.reset();
+    reset();
   };
 
   return (
@@ -136,18 +138,21 @@ const PastEntries = ({ entry, deleteHandler, deleteAllHandler }) => {
 };
 
 const Form = () => {
+  const user = useSelector((state) => state.user.users);
+  const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(signUpSchema),
   });
 
-  const onSubmit = (data, event) => {
-    console.log(data);
-    event.target.reset();
-    alert("thanks for signing up!");
+  const onSubmit = (data) => {
+    dispatch(addUser(data));
+    reset();
   };
 
   return (
@@ -157,11 +162,19 @@ const Form = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>
             <h1> Sign Up </h1>
-            <input {...register("firstName")} placeholder="First Name" />
+            <input
+              type="text"
+              {...register("firstName")}
+              placeholder="First Name"
+            />
             <p>{errors.firstName?.message}</p>
-            <input {...register("lastName")} placeholder="Last Name" />
+            <input
+              type="text"
+              {...register("lastName")}
+              placeholder="Last Name"
+            />
             <p>{errors.lastName?.message}</p>
-            <input {...register("email")} placeholder="Email" />
+            <input type="text" {...register("email")} placeholder="Email" />
             <p>{errors.email?.message}</p>
             <button>Submit</button>
           </label>
@@ -186,7 +199,8 @@ const Home = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
 };
 
 function App() {
-  const entry = useSelector((state) => state.entries);
+  const entry = useSelector((state) => state.entry.entries);
+  const user = useSelector((state) => state.user.users);
   const dispatch = useDispatch();
 
   const deleteHandler = (id) => {
@@ -223,7 +237,10 @@ function App() {
             />
           }
         />
-        <Route path="/sign-up" element={<Form />} />
+        <Route
+          path="/sign-up"
+          element={<Form user={user} dispatch={dispatch} />}
+        />
       </Routes>
     </BrowserRouter>
   );

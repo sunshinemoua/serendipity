@@ -37,4 +37,4 @@ export const entrySlice = createSlice({
 });
 
 export const { addEntry, deleteEntry, deleteAllEntries } = entrySlice.actions;
-export default entrySlice.reducer;
+export const entryReducer = entrySlice.reducer;

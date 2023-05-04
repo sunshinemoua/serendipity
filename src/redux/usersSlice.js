@@ -9,17 +9,28 @@ const setUserFunc = (usersList) => {
   localStorage.setItem("users", JSON.stringify(usersList));
 };
 
-const usersSlice = createSlice({
+export const usersSlice = createSlice({
   name: "users",
   initialState: {
     users: usersList,
   },
   reducers: {
     addUser: (state, { payload }) => {
-      console.log(payload);
-      state.users = [payload];
+      const existingUserEmail = state.users.map((user) => user.email);
 
-      console.log(state.users);
+      const isEmailExist = existingUserEmail.find(
+        (email) => email === payload.email
+      );
+
+      if (isEmailExist) {
+        alert("Email already exists, please sign in");
+      } else {
+        const newUsers = [payload, ...state.users];
+        state.users = newUsers;
+
+        setUserFunc(state.users);
+        console.log(newUsers);
+      }
     },
   },
 });
