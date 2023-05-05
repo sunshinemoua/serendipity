@@ -138,7 +138,10 @@ const SignUp = () => {
   );
 };
 
-const Entries = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
+const Entries = () => {
+  const dispatch = useDispatch();
+  const entry = useSelector((state) => state.entry.entries);
+
   const {
     register,
     handleSubmit,
@@ -178,37 +181,53 @@ const Entries = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
             <div className="btn-wrapper">
               <button>Add</button>
               {entry.length > 0 && (
-                <button onClick={deleteAllHandler}>Delete All Entries</button>
+                <button onClick={() => dispatch(deleteAllEntries())}>
+                  Delete All Entries
+                </button>
               )}
             </div>
           </label>
         </form>
 
-        <EntriesList entry={entry} deleteHandler={deleteHandler} />
+        <EntriesList />
       </div>
     </div>
   );
 };
 
-const PastEntries = ({ entry, deleteHandler, deleteAllHandler }) => {
+const PastEntries = () => {
+  const dispatch = useDispatch();
+  const entry = useSelector((state) => state.entry.entries);
+
   return (
     <div className="page-wrapper">
       <NavBar />
       <div className="form-wrapper">
         <h2> All Entries</h2>
         {entry.length > 0 ? (
-          <button onClick={deleteAllHandler}>Delete All Entries</button>
+          <button onClick={() => dispatch(deleteAllEntries())}>
+            Delete All Entries
+          </button>
         ) : (
           <p>No entries yet!</p>
         )}
 
-        <EntriesList entry={entry} deleteHandler={deleteHandler} />
+        <EntriesList entry={entry} />
       </div>
     </div>
   );
 };
 
-const EntriesList = ({ entry, deleteHandler }) => {
+const EntriesList = () => {
+  const dispatch = useDispatch();
+  const entry = useSelector((state) => state.entry.entries);
+
+  const deleteHandler = (id) => {
+    const entryCopy = [...entry, id];
+    const filteredEntries = entryCopy.filter((item) => item !== id);
+    dispatch(deleteEntry(filteredEntries));
+  };
+
   const mappedEntries = entry.map((item) => {
     return (
       <div key={item.id}>
@@ -230,63 +249,22 @@ const EntriesList = ({ entry, deleteHandler }) => {
   return <div>{mappedEntries}</div>;
 };
 
-const Home = ({ entry, dispatch, deleteHandler, deleteAllHandler }) => {
+const Home = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <Entries
-        entry={entry}
-        dispatch={dispatch}
-        deleteHandler={deleteHandler}
-        deleteAllHandler={deleteAllHandler}
-      />
+      <Entries />
     </div>
   );
 };
 
 function App() {
-  const entry = useSelector((state) => state.entry.entries);
-  const user = useSelector((state) => state.user.users);
-  const dispatch = useDispatch();
-
-  const deleteHandler = (id) => {
-    const entryCopy = [...entry, id];
-    const filteredEntries = entryCopy.filter((item) => item !== id);
-    dispatch(deleteEntry(filteredEntries));
-  };
-
-  const deleteAllHandler = () => {
-    dispatch(deleteAllEntries());
-  };
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              entry={entry}
-              dispatch={dispatch}
-              deleteHandler={deleteHandler}
-              deleteAllHandler={deleteAllHandler}
-            />
-          }
-        />
-        <Route
-          path="/my-entries"
-          element={
-            <PastEntries
-              entry={entry}
-              deleteHandler={deleteHandler}
-              deleteAllHandler={deleteAllHandler}
-            />
-          }
-        />
-        <Route
-          path="/sign-up"
-          element={<SignUp user={user} dispatch={dispatch} />}
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/my-entries" element={<PastEntries />} />
+        <Route path="/sign-up" element={<SignUp />} />
         <Route path="sign-in" element={<SignIn />} />
       </Routes>
     </BrowserRouter>
