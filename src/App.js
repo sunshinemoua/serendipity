@@ -1,4 +1,11 @@
-import { NavLink, BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  NavLink,
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -6,9 +13,9 @@ import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
 import { v4 as uuid } from "uuid";
-import { addUser, checkUser } from "./redux/usersSlice";
+import { addUser, checkUser, deleteAllUsers, logOut } from "./redux/usersSlice";
 
-const signUpSchema = yup.object().shape({
+const createAccountSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last name is required"),
   email: yup
@@ -34,6 +41,8 @@ const entrySchema = yup.object().shape({
 });
 
 const NavBar = () => {
+  const dispatch = useDispatch();
+
   return (
     <div className="navbar-wrapper">
       <h1> Serendipity</h1>
@@ -44,12 +53,15 @@ const NavBar = () => {
         <NavLink className="link" to="/my-entries">
           My Entries
         </NavLink>
-        <NavLink className="link" to="/sign-up">
-          Sign Up
+        <NavLink className="link" to="/create-account">
+          Create Account
         </NavLink>
         <NavLink className="link" to="/sign-in">
           Sign In
         </NavLink>
+        <button className="link" onClick={() => dispatch(logOut())}>
+          Log Out
+        </button>
       </div>
     </div>
   );
@@ -70,14 +82,13 @@ const Form = ({ header, formSchema, action }) => {
   };
 
   return (
-    <div className="form-wrapper sign-up">
+    <div className="form-wrapper create-account">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label>
             <h1> {header} </h1>
-            {formSchema === signUpSchema ? (
+            {formSchema === createAccountSchema ? (
               <div>
-                {" "}
                 <input
                   type="text"
                   {...register("firstName")}
@@ -110,6 +121,8 @@ const Form = ({ header, formSchema, action }) => {
 
 const SignIn = () => {
   const dispatch = useDispatch();
+  const verifiedUser = useSelector((state) => state.user.verifiedUsers);
+  console.log(verifiedUser);
 
   const action = (data) => {
     dispatch(checkUser(data));
@@ -123,7 +136,7 @@ const SignIn = () => {
   );
 };
 
-const SignUp = () => {
+const CreateAccount = () => {
   const dispatch = useDispatch();
 
   const action = (data) => {
@@ -133,7 +146,10 @@ const SignUp = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <Form header="Sign Up" formSchema={signUpSchema} action={action} />
+      <Form header="Sign Up" formSchema={createAccountSchema} action={action} />
+      <button onClick={() => dispatch(deleteAllUsers())}>
+        Delete All Users
+      </button>
     </div>
   );
 };
@@ -258,13 +274,24 @@ const Home = () => {
   );
 };
 
+const PrivateRoutes = () => {
+  const verifiedUser = useSelector((state) => state.user.verifiedUsers);
+
+  const isVerified = verifiedUser.verified;
+
+  return isVerified ? <Outlet /> : <Navigate to="/sign-in" />;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/my-entries" element={<PastEntries />} />
-        <Route path="/sign-up" element={<SignUp />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/my-entries" element={<PastEntries />} />
+        </Route>
+
+        <Route path="/create-account" element={<CreateAccount />} />
         <Route path="sign-in" element={<SignIn />} />
       </Routes>
     </BrowserRouter>
