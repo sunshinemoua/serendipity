@@ -195,37 +195,39 @@ const Entries = () => {
 
   return (
     <div className="page-wrapper">
-      <div className="form-wrapper">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label>
-            <h2>What's on your mind?</h2>
-            <input type="date" {...register("date")} placeholder="Date" />
-            <p>{errors.date?.message}</p>
-            <input
-              type="text"
-              {...register("feeling")}
-              placeholder="How are you feeling?"
-            />
-            <p>{errors.feeling?.message}</p>
-            <textarea
-              type="text"
-              {...register("entry")}
-              placeholder="Say something..."
-              rows="10"
-            />
-            <p>{errors.entry?.message}</p>
-            <div className="btn-wrapper">
-              <button>Add</button>
-              {entry.length > 0 && (
-                <button onClick={() => dispatch(deleteAllEntries())}>
-                  Delete All Entries
-                </button>
-              )}
-            </div>
-          </label>
-        </form>
+      <div className="form-page-outermost-div">
+        <div className="form-wrapper">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label>
+              <h2>What's on your mind?</h2>
+              <input type="date" {...register("date")} placeholder="Date" />
+              <p>{errors.date?.message}</p>
+              <input
+                type="text"
+                {...register("feeling")}
+                placeholder="How are you feeling?"
+              />
+              <p>{errors.feeling?.message}</p>
+              <textarea
+                type="text"
+                {...register("entry")}
+                placeholder="Say something..."
+                rows="10"
+              />
+              <p>{errors.entry?.message}</p>
+              <div className="btn-wrapper">
+                <button>Add</button>
+                {entry.length > 0 && (
+                  <button onClick={() => dispatch(deleteAllEntries())}>
+                    Delete All Entries
+                  </button>
+                )}
+              </div>
+            </label>
+          </form>
 
-        <EntriesList />
+          <EntriesList />
+        </div>
       </div>
     </div>
   );
@@ -238,17 +240,19 @@ const PastEntries = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <div className="form-wrapper">
-        <h2> All Entries</h2>
-        {entry.length > 0 ? (
-          <button onClick={() => dispatch(deleteAllEntries())}>
-            Delete All Entries
-          </button>
-        ) : (
-          <p>No entries yet!</p>
-        )}
+      <div className="form-page-outermost-div">
+        <div className="form-wrapper">
+          <h2> All Entries</h2>
+          {entry.length > 0 ? (
+            <button onClick={() => dispatch(deleteAllEntries())}>
+              Delete All Entries
+            </button>
+          ) : (
+            <p>No entries yet!</p>
+          )}
 
-        <EntriesList entry={entry} />
+          <EntriesList entry={entry} />
+        </div>
       </div>
     </div>
   );
