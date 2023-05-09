@@ -54,12 +54,12 @@ const NavBar = () => {
         <NavLink className="link" to="/my-entries">
           My Entries
         </NavLink>
-        {/* <NavLink className="link" to="/create-account">
-          Create Account
-        </NavLink> */}
-        <NavLink className="link" to="/sign-in">
-          Sign In
-        </NavLink>
+
+        {!verified && (
+          <NavLink className="link" to="/sign-in">
+            Sign In
+          </NavLink>
+        )}
         {verified && (
           <button className="link" onClick={() => dispatch(logOut())}>
             Log Out
@@ -85,13 +85,18 @@ const Form = ({ header, formSchema, action }) => {
   };
 
   return (
-    <div className="form-wrapper create-account">
+    <div className="form-page-outermost-div">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
+        <div
+          className={`${
+            header == "Sign Up" ? "form-wrapper " : "form-wrapper-login"
+          }`}
+        >
+          <h1> {header} </h1>
+
           <label>
-            <h1> {header} </h1>
             {formSchema === createAccountSchema ? (
-              <div>
+              <div className="form-inputs-wrapper">
                 <input
                   type="text"
                   {...register("firstName")}
@@ -107,12 +112,24 @@ const Form = ({ header, formSchema, action }) => {
                 <input type="text" {...register("email")} placeholder="Email" />
                 <p>{errors.email?.message}</p>
                 <button>Submit</button>
+                <div className="sign-up-link-wrapper">
+                  Already have an account?
+                  <NavLink className="link" to="/sign-in">
+                    Log In
+                  </NavLink>
+                </div>
               </div>
             ) : (
-              <div>
+              <div className="form-inputs-wrapper">
                 <input type="text" {...register("email")} placeholder="Email" />
                 <p>{errors.email?.message}</p>
                 <button>Log In</button>
+                <div className="sign-up-link-wrapper">
+                  Don't have an account?
+                  <NavLink className="link" to="/create-account">
+                    Sign Up
+                  </NavLink>
+                </div>
               </div>
             )}
           </label>
@@ -134,7 +151,7 @@ const SignIn = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <Form header="Sign In" formSchema={signInSchema} action={action} />
+      <Form header="Welcome Back!!" formSchema={signInSchema} action={action} />
     </div>
   );
 };
