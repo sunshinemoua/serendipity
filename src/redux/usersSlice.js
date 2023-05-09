@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { uuid } from "uuidv4";
 
 const usersList =
   localStorage.getItem("users") !== null

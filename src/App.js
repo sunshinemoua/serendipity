@@ -42,6 +42,7 @@ const entrySchema = yup.object().shape({
 
 const NavBar = () => {
   const dispatch = useDispatch();
+  const verified = useSelector((state) => state.user.verifiedUsers);
 
   return (
     <div className="navbar-wrapper">
@@ -53,15 +54,17 @@ const NavBar = () => {
         <NavLink className="link" to="/my-entries">
           My Entries
         </NavLink>
-        <NavLink className="link" to="/create-account">
+        {/* <NavLink className="link" to="/create-account">
           Create Account
-        </NavLink>
+        </NavLink> */}
         <NavLink className="link" to="/sign-in">
           Sign In
         </NavLink>
-        <button className="link" onClick={() => dispatch(logOut())}>
-          Log Out
-        </button>
+        {verified && (
+          <button className="link" onClick={() => dispatch(logOut())}>
+            Log Out
+          </button>
+        )}
       </div>
     </div>
   );
