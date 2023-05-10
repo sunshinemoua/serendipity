@@ -38,7 +38,10 @@ export const usersSlice = createSlice({
         const newUsers = [payload, ...state.users];
         state.users = newUsers;
         setUserFunc(state.users);
-        alert("Thanks for signing up");
+
+        payload.verified = true;
+        state.verifiedUsers = payload.verified;
+        setVerifiedFunc(state.verifiedUsers);
       }
     },
 
@@ -50,9 +53,7 @@ export const usersSlice = createSlice({
       if (isEmailExist) {
         payload.verified = true;
         state.verifiedUsers = payload;
-        console.log(state.verifiedUsers);
         setVerifiedFunc(state.verifiedUsers);
-        alert("access granted");
       } else {
         payload.verified = false;
         state.verifiedUsers = payload;

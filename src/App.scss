@@ -62,7 +62,10 @@
     }
   }
 
-  button {
+  button,
+  .btn {
+    display: flex;
+    justify-content: center;
     background-color: rgb(255, 241, 233);
     color: rgb(56, 20, 96);
     width: 100%;
@@ -70,7 +73,7 @@
     font-weight: bold;
     border: none;
     border-radius: 8px;
-
+    text-decoration: none;
     padding: 0.75rem;
 
     &:hover {
@@ -123,19 +126,26 @@ h2 {
 .navbar-wrapper {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
   margin: 0 2rem;
+
+  .nav-inner-div {
+    width: 40%;
+  }
 
   h1 {
     color: rgb(162, 120, 181);
     text-transform: uppercase;
     letter-spacing: 3px;
   }
+  .sign-in-link {
+    justify-content: flex-end;
+  }
   .navlinks {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 40%;
   }
 
   .link {
@@ -146,6 +156,6 @@ h2 {
   }
 
   .logout-btn {
-    display: none;
+    width: fit-content;
   }
 }
