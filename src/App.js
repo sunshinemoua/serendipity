@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   NavLink,
   BrowserRouter,
@@ -5,6 +7,7 @@ import {
   Routes,
   Navigate,
   Outlet,
+  useNavigate,
 } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -47,23 +50,25 @@ const NavBar = () => {
   return (
     <div className="navbar-wrapper">
       <h1> Serendipity</h1>
-      <div className="navlinks">
-        <NavLink className="link" to="/">
-          Home
-        </NavLink>
-        <NavLink className="link" to="/my-entries">
-          My Entries
-        </NavLink>
-
+      <div className="nav-inner-div">
         {!verified && (
           <NavLink className="link" to="/sign-in">
             Sign In
           </NavLink>
         )}
         {verified && (
-          <button className="link" onClick={() => dispatch(logOut())}>
-            Log Out
-          </button>
+          <div className="navlinks">
+            <NavLink className="link" to="/">
+              Home
+            </NavLink>
+
+            <NavLink className="link" to="/my-entries">
+              My Entries
+            </NavLink>
+            <button className="logout-btn" onClick={() => dispatch(logOut())}>
+              Log Out
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -79,8 +84,11 @@ const Form = ({ header, formSchema, action }) => {
     resolver: yupResolver(formSchema),
   });
 
+  const navigate = useNavigate();
+
   const onSubmit = (data) => {
     action(data);
+    navigate("/", { replace: true });
     reset();
   };
 
@@ -142,7 +150,6 @@ const Form = ({ header, formSchema, action }) => {
 const SignIn = () => {
   const dispatch = useDispatch();
   const verifiedUser = useSelector((state) => state.user.verifiedUsers);
-  console.log(verifiedUser);
 
   const action = (data) => {
     dispatch(checkUser(data));
@@ -158,6 +165,7 @@ const SignIn = () => {
 
 const CreateAccount = () => {
   const dispatch = useDispatch();
+  const verified = useSelector((state) => state.user.verifiedUsers);
 
   const action = (data) => {
     dispatch(addUser(data));
@@ -167,6 +175,7 @@ const CreateAccount = () => {
     <div className="page-wrapper">
       <NavBar />
       <Form header="Sign Up" formSchema={createAccountSchema} action={action} />
+
       <button onClick={() => dispatch(deleteAllUsers())}>
         Delete All Users
       </button>
@@ -301,7 +310,7 @@ const Home = () => {
 const PrivateRoutes = () => {
   const verifiedUser = useSelector((state) => state.user.verifiedUsers);
 
-  const isVerified = verifiedUser.verified;
+  const isVerified = verifiedUser;
 
   return isVerified ? <Outlet /> : <Navigate to="/sign-in" />;
 };
