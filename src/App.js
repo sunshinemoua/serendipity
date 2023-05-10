@@ -50,13 +50,17 @@ const NavBar = () => {
   return (
     <div className="navbar-wrapper">
       <h1> Serendipity</h1>
-      <div className="nav-inner-div">
-        {!verified && (
+
+      {!verified && (
+        <div className="sign-in-nav">
           <NavLink className="link" to="/sign-in">
             Sign In
           </NavLink>
-        )}
-        {verified && (
+        </div>
+      )}
+
+      {verified && (
+        <div className="log-in-nav">
           <div className="navlinks">
             <NavLink className="link" to="/">
               Home
@@ -69,8 +73,8 @@ const NavBar = () => {
               Log Out
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
