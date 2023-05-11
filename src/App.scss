@@ -2,129 +2,131 @@
 .page-wrapper {
   height: 100vh;
   background-color: rgb(251, 223, 240);
+}
 
+.link {
+  font-size: 1.15rem;
+  font-weight: bold;
+  text-decoration: none;
+  &:hover {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    transform: scale(1.15);
+  }
+}
+
+.form-page-outermost-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10%;
+}
+
+.form-wrapper,
+.form-wrapper-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 500px;
+  height: auto;
+  border-radius: 16px;
+  background-color: rgb(162, 120, 181);
+  color: rgb(255, 241, 233);
+
+  h1 {
+    margin: 2.5rem;
+  }
+}
+
+.form-wrapper-login {
+  height: 400px;
+}
+
+.form-inputs-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sign-up-link-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  margin: 1rem;
+  padding: 1rem;
+  font-weight: bold;
   .link {
-    &:hover {
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      transform: scale(1.5);
-    }
+    color: rgb(74, 43, 89);
   }
+}
 
-  .form-page-outermost-div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10%;
+input,
+textarea {
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem;
+  width: -webkit-fill-available;
+  font-family: Arial, Helvetica, sans-serif;
+
+  &:focus {
+    outline: none;
   }
+}
 
-  .form-wrapper,
-  .form-wrapper-login {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
-    width: 500px;
-    height: auto;
-    border-radius: 16px;
-    background-color: rgb(162, 120, 181);
+button {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: rgb(255, 241, 233);
+  color: rgb(56, 20, 96);
+  width: 100%;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: rgb(56, 20, 96);
     color: rgb(255, 241, 233);
-
-    h1 {
-      margin: 2.5rem;
-    }
+    cursor: pointer;
   }
+}
 
-  .form-wrapper-login {
-    height: 400px;
-  }
+.btn {
+  width: fit-content;
+  margin: 0;
 
-  .form-inputs-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .sign-up-link-wrapper {
-    display: flex;
-    width: 100%;
-    justify-content: space-evenly;
-    margin: 1rem;
-    padding: 1rem;
-    font-weight: bold;
-    .link {
-      text-decoration: none;
-      color: rgb(74, 43, 89);
-    }
-  }
-
-  input,
-  textarea {
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem;
-    width: -webkit-fill-available;
-    font-family: Arial, Helvetica, sans-serif;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  button {
-    display: flex;
-    justify-content: center;
-    padding: 0.75rem;
-    background-color: rgb(255, 241, 233);
-    color: rgb(56, 20, 96);
-    width: 100%;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    text-decoration: none;
-
-    &:hover {
-      background-color: rgb(56, 20, 96);
-      color: rgb(255, 241, 233);
-      cursor: pointer;
-    }
-  }
-
-  .btn {
+  &--past-entries {
     width: fit-content;
-    margin: 0;
-
-    &--past-entries {
-      width: fit-content;
-      margin: 1rem;
-      margin-top: 0;
-    }
-    &--entry-form {
-      margin-bottom: 1rem;
-    }
+    margin: 1rem;
+    margin-top: 0;
   }
+  &--entry-form {
+    margin-bottom: 1rem;
+  }
+}
 
-  .item-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.item-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    li {
+  li {
+    margin: 1rem;
+    list-style-type: circle;
+    color: rgb(255, 241, 233);
+    font-weight: 800;
+
+    span {
+      font-size: 1.25rem;
+      color: rgb(81, 50, 82);
+      text-decoration: underline;
+    }
+
+    p {
       margin: 1rem;
-      list-style-type: circle;
-      color: rgb(255, 241, 233);
-      font-weight: 800;
-
-      span {
-        font-size: 1.25rem;
-        color: rgb(81, 50, 82);
-        text-decoration: underline;
-      }
-
-      p {
-        margin: 1rem;
-        font-weight: 400;
-      }
+      font-weight: 400;
     }
   }
 }
@@ -159,6 +161,9 @@ form {
   justify-content: space-between;
   margin: 0 2rem;
 
+  .link {
+    color: rgb(162, 120, 181);
+  }
   .log-in-nav {
     width: 40%;
   }
@@ -176,12 +181,5 @@ form {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .link {
-    color: rgb(162, 120, 181);
-    font-size: 1.15rem;
-    font-weight: bold;
-    text-decoration: none;
   }
 }
