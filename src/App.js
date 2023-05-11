@@ -69,7 +69,7 @@ const NavBar = () => {
             <NavLink className="link" to="/my-entries">
               My Entries
             </NavLink>
-            <button className="logout-btn" onClick={() => dispatch(logOut())}>
+            <button className="btn" onClick={() => dispatch(logOut())}>
               Log Out
             </button>
           </div>
@@ -187,7 +187,7 @@ const CreateAccount = () => {
   );
 };
 
-const Entries = () => {
+const EntriesForm = () => {
   const dispatch = useDispatch();
   const entry = useSelector((state) => state.entry.entries);
 
@@ -210,9 +210,9 @@ const Entries = () => {
     <div className="page-wrapper">
       <div className="form-page-outermost-div">
         <div className="form-wrapper">
+          <h1 className="entry-form-header">What's on your mind?</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <label>
-              <h2>What's on your mind?</h2>
               <input type="date" {...register("date")} placeholder="Date" />
               <p>{errors.date?.message}</p>
               <input
@@ -229,9 +229,12 @@ const Entries = () => {
               />
               <p>{errors.entry?.message}</p>
               <div className="btn-wrapper">
-                <button>Add</button>
+                <button className="btn--entry-form">Add</button>
                 {entry.length > 0 && (
-                  <button onClick={() => dispatch(deleteAllEntries())}>
+                  <button
+                    className="btn--entry-form"
+                    onClick={() => dispatch(deleteAllEntries())}
+                  >
                     Delete All Entries
                   </button>
                 )}
@@ -255,9 +258,12 @@ const PastEntries = () => {
       <NavBar />
       <div className="form-page-outermost-div">
         <div className="form-wrapper">
-          <h2> All Entries</h2>
+          <h1 className="entry-form-header">All Entries</h1>
           {entry.length > 0 ? (
-            <button onClick={() => dispatch(deleteAllEntries())}>
+            <button
+              className="btn--past-entries"
+              onClick={() => dispatch(deleteAllEntries())}
+            >
               Delete All Entries
             </button>
           ) : (
@@ -290,7 +296,7 @@ const EntriesList = () => {
             <p>{item.entry}</p>
           </li>
           {deleteHandler !== null && (
-            <button className="delete-btn" onClick={() => deleteHandler(item)}>
+            <button className="btn" onClick={() => deleteHandler(item)}>
               Delete
             </button>
           )}
@@ -306,7 +312,7 @@ const Home = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <Entries />
+      <EntriesForm />
     </div>
   );
 };
