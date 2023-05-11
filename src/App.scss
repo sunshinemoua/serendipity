@@ -3,11 +3,19 @@
   height: 100vh;
   background-color: rgb(251, 223, 240);
 
+  .link {
+    &:hover {
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      transform: scale(1.5);
+    }
+  }
+
   .form-page-outermost-div {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80%;
+    margin: 10%;
   }
 
   .form-wrapper,
@@ -16,19 +24,19 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    height: 550px;
     width: 500px;
+    height: auto;
     border-radius: 16px;
     background-color: rgb(162, 120, 181);
     color: rgb(255, 241, 233);
 
     h1 {
-      margin: 0;
+      margin: 2.5rem;
     }
   }
 
   .form-wrapper-login {
-    height: 450px;
+    height: 400px;
   }
 
   .form-inputs-wrapper {
@@ -62,10 +70,10 @@
     }
   }
 
-  button,
-  .btn {
+  button {
     display: flex;
     justify-content: center;
+    padding: 0.75rem;
     background-color: rgb(255, 241, 233);
     color: rgb(56, 20, 96);
     width: 100%;
@@ -74,12 +82,25 @@
     border: none;
     border-radius: 8px;
     text-decoration: none;
-    padding: 0.75rem;
 
     &:hover {
       background-color: rgb(56, 20, 96);
       color: rgb(255, 241, 233);
       cursor: pointer;
+    }
+  }
+
+  .btn {
+    width: fit-content;
+    margin: 0;
+
+    &--past-entries {
+      width: fit-content;
+      margin: 1rem;
+      margin-top: 0;
+    }
+    &--entry-form {
+      margin-bottom: 1rem;
     }
   }
 
@@ -105,21 +126,29 @@
         font-weight: 400;
       }
     }
-
-    .delete-btn {
-      height: fit-content;
-    }
   }
 }
 
 //ENTRY FORM
 
-h2 {
+.entry-form-header {
   display: flex;
   justify-content: center;
+  margin: 2.5rem 0;
+  font-size: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: rgb(255, 241, 233);
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  label {
+    width: 75%;
+  }
 }
 
 // NAVBAR
@@ -136,6 +165,7 @@ h2 {
 
   h1 {
     color: rgb(162, 120, 181);
+    font-size: 2.25rem;
     text-transform: uppercase;
     letter-spacing: 3px;
   }
@@ -153,9 +183,5 @@ h2 {
     font-size: 1.15rem;
     font-weight: bold;
     text-decoration: none;
-  }
-
-  .logout-btn {
-    width: fit-content;
   }
 }
