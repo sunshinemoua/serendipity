@@ -14,9 +14,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
+// import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
 import { v4 as uuid } from "uuid";
-import { addUser, checkUser, deleteAllUsers, logOut } from "./redux/usersSlice";
+import {
+  addUser,
+  checkUser,
+  deleteAllUsers,
+  logOut,
+  addEntry,
+  deleteEntry,
+  deleteAllEntries,
+} from "./redux/usersSlice";
 
 const createAccountSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -45,7 +53,8 @@ const entrySchema = yup.object().shape({
 
 const NavBar = () => {
   const dispatch = useDispatch();
-  const verified = useSelector((state) => state.user.verifiedUsers);
+  const verifiedUser = useSelector((state) => state.user.verifiedUser);
+  const verified = verifiedUser.verified;
 
   return (
     <div className="navbar-wrapper">
@@ -189,7 +198,11 @@ const CreateAccount = () => {
 
 const EntriesForm = () => {
   const dispatch = useDispatch();
-  const entry = useSelector((state) => state.entry.entries);
+  // const entry = useSelector((state) => state.user.users.entries);
+  // console.log(entry);
+
+  const users = useSelector((state) => state.user.users);
+  console.log(users);
 
   const {
     register,
@@ -202,6 +215,7 @@ const EntriesForm = () => {
 
   const onSubmit = (data) => {
     data.id = uuid();
+    console.log(data.id, data);
     dispatch(addEntry(data));
     reset();
   };
@@ -230,7 +244,7 @@ const EntriesForm = () => {
               <p>{errors.entry?.message}</p>
               <div className="btn-wrapper">
                 <button className="btn--entry-form">Add</button>
-                {entry.length > 0 && (
+                {users.length > 0 && (
                   <button
                     className="btn--entry-form"
                     onClick={() => dispatch(deleteAllEntries())}
@@ -251,7 +265,7 @@ const EntriesForm = () => {
 
 const PastEntries = () => {
   const dispatch = useDispatch();
-  const entry = useSelector((state) => state.entry.entries);
+  const entry = useSelector((state) => state.user.entries);
 
   return (
     <div className="page-wrapper">
@@ -279,15 +293,22 @@ const PastEntries = () => {
 
 const EntriesList = () => {
   const dispatch = useDispatch();
-  const entry = useSelector((state) => state.entry.entries);
+  const entries = useSelector((state) => state.user.entries);
+  const users = useSelector((state) => state.user.users);
+
+  const verified = useSelector((state) => state.user.verifiedUser);
+  console.log(verified.entries);
+
+  // const entries = verified.entries;
 
   const deleteHandler = (id) => {
-    const entryCopy = [...entry, id];
-    const filteredEntries = entryCopy.filter((item) => item !== id);
+    const entriesCopy = [...entries, id];
+    console.log(entriesCopy);
+    const filteredEntries = entriesCopy.filter((item) => item !== id);
     dispatch(deleteEntry(filteredEntries));
   };
 
-  const mappedEntries = entry.map((item) => {
+  const mappedEntries = entries.map((item) => {
     return (
       <div key={item.id}>
         <div className="item-wrapper">
@@ -304,7 +325,6 @@ const EntriesList = () => {
       </div>
     );
   });
-
   return <div>{mappedEntries}</div>;
 };
 
@@ -318,9 +338,10 @@ const Home = () => {
 };
 
 const PrivateRoutes = () => {
-  const verifiedUser = useSelector((state) => state.user.verifiedUsers);
+  const verifiedUser = useSelector((state) => state.user.verifiedUser);
 
-  const isVerified = verifiedUser;
+  const isVerified = verifiedUser.verified;
+  console.log(isVerified);
 
   return isVerified ? <Outlet /> : <Navigate to="/sign-in" />;
 };
