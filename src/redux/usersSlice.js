@@ -5,28 +5,47 @@ const usersList =
     ? JSON.parse(localStorage.getItem("users"))
     : [];
 
-const verified =
-  localStorage.getItem("verified") !== null
-    ? JSON.parse(localStorage.getItem("verified"))
+const entriesList =
+  localStorage.getItem("entries") !== null
+    ? JSON.parse(localStorage.getItem("users"))
+    : [];
+
+const verifiedUser =
+  localStorage.getItem("verifiedUser") !== null
+    ? JSON.parse(localStorage.getItem("verifiedUser"))
     : false;
 
-const setUserFunc = (usersList) => {
-  localStorage.setItem("users", JSON.stringify(usersList));
+const setUserFunc = (user) => {
+  localStorage.setItem("users", JSON.stringify(user));
 };
 
-const setVerifiedFunc = (verified) => {
-  localStorage.setItem("verified", JSON.stringify(verified));
+const setVerifiedUsersFunc = (verified) => {
+  localStorage.setItem("verifiedUser", JSON.stringify(verified));
 };
+
+const setEntriesFunc = (entry) => {
+  localStorage.setItem("entries", JSON.stringify(entry));
+};
+// const setEntriesFunc = (entriesList) => {
+//   localStorage.setItem("users", JSON.stringify(entriesList));
+// };
+// const setVerifiedFunc = (verified) => {
+//   localStorage.setItem("users", JSON.stringify(verified));
+// };
 
 export const usersSlice = createSlice({
   name: "users",
   initialState: {
     users: usersList,
-    verifiedUsers: verified,
+    entries: entriesList,
+    verifiedUser: verifiedUser,
   },
   reducers: {
     addUser: (state, { payload }) => {
+      console.log(payload);
+
       const existingUserEmail = state.users.map((user) => user.email);
+      console.log(existingUserEmail);
 
       const isEmailExist = existingUserEmail.find(
         (email) => email === payload.email
@@ -35,44 +54,165 @@ export const usersSlice = createSlice({
       if (isEmailExist) {
         alert("Email already exists, please sign in");
       } else {
-        const newUsers = [payload, ...state.users];
-        state.users = newUsers;
-        setUserFunc(state.users);
+        const newUser = {
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          email: payload.email,
+          entries: [],
+          verified: true,
+        };
 
-        payload.verified = true;
-        state.verifiedUsers = payload.verified;
-        setVerifiedFunc(state.verifiedUsers);
+        // const newUser = {
+        //   email: payload.email,
+        //   info: {
+        //     firstName: payload.firstName,
+        //     lastName: payload.lastName,
+        //     entries: [],
+        //     verified: true,
+        //   },
+        // };
+
+        const updatedUsers = [newUser, ...state.users];
+        state.users = updatedUsers;
+        state.verifiedUser = newUser;
+
+        setUserFunc(state.users);
+        setVerifiedUsersFunc(newUser);
+
+        console.log(state.users);
       }
     },
 
     checkUser: (state, { payload }) => {
       const existingUserEmail = state.users.map((user) => user.email);
+
+      console.log(existingUserEmail);
+
       const isEmailExist = existingUserEmail.find(
         (email) => email === payload.email
       );
+
+      console.log(isEmailExist);
+
       if (isEmailExist) {
-        payload.verified = true;
-        state.verifiedUsers = payload;
-        setVerifiedFunc(state.verifiedUsers);
-      } else {
-        payload.verified = false;
-        state.verifiedUsers = payload;
-        alert("email not found, please create account");
+        const update = state.users.map((user) =>
+          user.email === isEmailExist
+            ? (state.verifiedUser = { ...user, verified: true })
+            : null
+        );
+        setVerifiedUsersFunc(update);
+
+        state.entries = state.verifiedUser.entries;
+        setEntriesFunc(state.entries);
       }
     },
 
     logOut: (state) => {
-      state.verifiedUsers = false;
-      localStorage.removeItem("verified");
+      const logOut = { ...state.verifiedUser, verified: false };
+      state.verifiedUser = logOut;
+      setVerifiedUsersFunc(state.verifiedUser);
+
+      const existingUserEmail = state.users.map((user) => user.email);
+      const isEmailExist = existingUserEmail.find(
+        (email) => email === logOut.email
+      );
+      console.log(existingUserEmail, isEmailExist);
+
+      if (isEmailExist) {
+        const updates = state.users.map((user) =>
+          user.email === isEmailExist ? logOut : user
+        );
+        console.log(updates);
+        state.users = updates;
+        setUserFunc(state.users);
+      }
+
+      localStorage.removeItem("entries");
+      localStorage.removeItem("verifiedUser");
     },
 
     deleteAllUsers: (state) => {
       state.users = [];
       localStorage.removeItem("users");
     },
+    ////////////////////////////////////////////////////////////////
+    addEntry: (state, { payload }) => {
+      state.entries = [payload, ...state.entries];
+      setEntriesFunc(state.entries);
+
+      const loggedInUser = JSON.parse(localStorage.getItem("verifiedUser"));
+
+      if (state.verifiedUser) {
+        state.entries = [...state.verifiedUser.entries, payload];
+        const test = { ...state.verifiedUser, entries: state.entries };
+
+        setEntriesFunc(state.entries);
+        setVerifiedUsersFunc(test);
+      }
+      const loggedInUserObj = { ...loggedInUser, entries: state.entries };
+      state.verifiedUser = loggedInUserObj;
+      setVerifiedUsersFunc(state.verifiedUser);
+
+      const existingUserEmail = state.users.map((user) => user.email);
+      const isEmailExist = existingUserEmail.find(
+        (email) => email === loggedInUser.email
+      );
+      console.log(existingUserEmail, isEmailExist);
+
+      if (isEmailExist) {
+        const updates = state.users.map((user) =>
+          user.email === isEmailExist ? loggedInUserObj : user
+        );
+        console.log(updates);
+        state.users = updates;
+        setUserFunc(state.users);
+      }
+    },
+    deleteEntry: (state, { payload }) => {
+      state.entries = payload;
+
+      localStorage.setItem(
+        "entries",
+        JSON.stringify(state.entries.map((item) => item))
+      );
+
+      const updatedEntries = JSON.parse(localStorage.getItem("entries"));
+
+      const loggedInUser = JSON.parse(localStorage.getItem("verifiedUser"));
+      const loggedInUserObj = { ...loggedInUser, entries: updatedEntries };
+      state.verifiedUser = loggedInUserObj;
+      setVerifiedUsersFunc(state.verifiedUser);
+
+      const existingUserEmail = state.users.map((user) => user.email);
+      const isEmailExist = existingUserEmail.find(
+        (email) => email === loggedInUser.email
+      );
+      console.log(existingUserEmail, isEmailExist);
+
+      if (isEmailExist) {
+        const updates = state.users.map((user) =>
+          user.email === isEmailExist ? loggedInUserObj : user
+        );
+        console.log(updates);
+        state.users = updates;
+        setUserFunc(state.users);
+      }
+    },
+
+    deleteAllEntries: (state) => {
+      state.users.entries = [];
+      localStorage.removeItem("entries");
+    },
   },
 });
 
-export const { addUser, checkUser, logOut, deleteAllUsers } =
-  usersSlice.actions;
+export const {
+  addUser,
+  checkUser,
+  logOut,
+  deleteAllUsers,
+  addEntry,
+  deleteEntry,
+  deleteAllEntries,
+} = usersSlice.actions;
 export const userReducer = usersSlice.reducer;

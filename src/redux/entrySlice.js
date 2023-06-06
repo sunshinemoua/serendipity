@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const entriesList =
-  localStorage.getItem("entries") !== null
-    ? JSON.parse(localStorage.getItem("entries"))
-    : [];
+// const entriesList =
+//   localStorage.getItem("entries") !== null
+//     ? JSON.parse(localStorage.getItem("entries"))
+//     : [];
 
 const setItemFunc = (entriesList) => {
   localStorage.setItem("entries", JSON.stringify(entriesList));
@@ -12,7 +12,8 @@ const setItemFunc = (entriesList) => {
 export const entrySlice = createSlice({
   name: "entry",
   initialState: {
-    entries: entriesList,
+    // entries: entriesList,
+    entries: "no",
   },
 
   reducers: {
