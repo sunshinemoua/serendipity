@@ -198,11 +198,7 @@ const CreateAccount = () => {
 
 const EntriesForm = () => {
   const dispatch = useDispatch();
-  // const entry = useSelector((state) => state.user.users.entries);
-  // console.log(entry);
-
   const users = useSelector((state) => state.user.users);
-  console.log(users);
 
   const {
     register,
@@ -293,13 +289,10 @@ const PastEntries = () => {
 
 const EntriesList = () => {
   const dispatch = useDispatch();
+  const test = useSelector((state) => state.user.verifiedUser.entries);
   const entries = useSelector((state) => state.user.entries);
-  const users = useSelector((state) => state.user.users);
 
-  const verified = useSelector((state) => state.user.verifiedUser);
-  console.log(verified.entries);
-
-  // const entries = verified.entries;
+  console.log(entries, test);
 
   const deleteHandler = (id) => {
     const entriesCopy = [...entries, id];
@@ -338,9 +331,7 @@ const Home = () => {
 };
 
 const PrivateRoutes = () => {
-  const verifiedUser = useSelector((state) => state.user.verifiedUser);
-
-  const isVerified = verifiedUser.verified;
+  const isVerified = useSelector((state) => state.user.verifiedUser.verified);
   console.log(isVerified);
 
   return isVerified ? <Outlet /> : <Navigate to="/sign-in" />;
