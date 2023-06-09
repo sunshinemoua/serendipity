@@ -15,6 +15,8 @@ const verifiedUser =
     ? JSON.parse(localStorage.getItem("verifiedUser"))
     : false;
 
+const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
+
 const setUserFunc = (user) => {
   localStorage.setItem("users", JSON.stringify(user));
 };
@@ -36,10 +38,7 @@ export const usersSlice = createSlice({
   },
   reducers: {
     addUser: (state, { payload }) => {
-      console.log(payload);
-
       const existingUserEmail = state.users.map((user) => user.email);
-      console.log(existingUserEmail);
 
       const isEmailExist = existingUserEmail.find(
         (email) => email === payload.email
@@ -62,8 +61,6 @@ export const usersSlice = createSlice({
 
         setUserFunc(state.users);
         setVerifiedUsersFunc(state.verifiedUser);
-
-        console.log(state.users);
       }
     },
 
@@ -74,7 +71,6 @@ export const usersSlice = createSlice({
       const isEmailExist = existingUserEmail.find(
         (email) => email === payload.email
       );
-      console.log(isEmailExist);
 
       if (isEmailExist) {
         state.users.map((user) =>
@@ -86,9 +82,9 @@ export const usersSlice = createSlice({
         const update = state.users.map((user) =>
           user.email === state.verifiedUser.email ? state.verifiedUser : user
         );
-        console.log(update);
+
         state.users = update;
-        setUserFunc(update);
+        setUserFunc(state.users);
 
         setVerifiedUsersFunc(state.verifiedUser);
 
@@ -102,6 +98,7 @@ export const usersSlice = createSlice({
     logOut: (state) => {
       const logOut = { ...verifiedUser, verified: false };
       state.verifiedUser = logOut;
+      state.entries = [];
       setVerifiedUsersFunc(state.verifiedUser);
 
       if (verifiedUser) {
@@ -110,9 +107,30 @@ export const usersSlice = createSlice({
         );
         setUserFunc(state.users);
       }
-
       localStorage.removeItem("entries");
       localStorage.removeItem("verifiedUser");
+    },
+
+    deleteAccount: (state, { payload }) => {
+      if (getVerifiedUser) {
+        state.users.map((user) => {
+          if (user.email === getVerifiedUser.email && payload.length > 0) {
+            state.users = payload;
+            setUserFunc(state.users);
+            state.verifiedUser = { ...getVerifiedUser, verified: false };
+            setVerifiedUsersFunc(state.verifiedUser);
+            localStorage.removeItem("verifiedUser");
+            localStorage.removeItem("entries");
+            console.log(payload);
+          } else {
+            state.verifiedUser = { ...getVerifiedUser, verified: false };
+            setVerifiedUsersFunc(state.verifiedUser);
+            localStorage.removeItem("users");
+            localStorage.removeItem("verifiedUser");
+            localStorage.removeItem("entries");
+          }
+        });
+      }
     },
 
     deleteAllUsers: (state) => {
@@ -121,51 +139,37 @@ export const usersSlice = createSlice({
       localStorage.removeItem("entries");
       localStorage.removeItem("verifiedUser");
     },
-    ////////////////////////////////////////////////////////////////
+    //******* ENTRIES *******//
     addEntry: (state, { payload }) => {
-      const loggedIn = verifiedUser.verified;
-
-      console.log(verifiedUser, loggedIn);
+      const loggedIn = getVerifiedUser.verified;
 
       if (loggedIn) {
-        state.entries = [...verifiedUser.entries, payload];
+        state.entries = [...getVerifiedUser.entries, payload];
         setEntriesFunc(state.entries);
 
-        console.log(state.entries);
-
-        const newVerifiedObj = { ...verifiedUser, entries: state.entries };
+        const newVerifiedObj = { ...getVerifiedUser, entries: state.entries };
         setVerifiedUsersFunc(newVerifiedObj);
-        console.log(state.entries, newVerifiedObj);
 
         const update = state.users.map((user) =>
-          user.email === verifiedUser.email ? newVerifiedObj : user
+          user.email === getVerifiedUser.email ? newVerifiedObj : user
         );
-        console.log(update);
         state.users = update;
-        setUserFunc(update);
+        setUserFunc(state.users);
       }
     },
     deleteEntry: (state, { payload }) => {
       state.entries = payload;
-
       localStorage.setItem("entries", JSON.stringify(state.entries));
 
       const updatedEntries = JSON.parse(localStorage.getItem("entries"));
 
-      const loggedInUser = JSON.parse(localStorage.getItem("verifiedUser"));
-      const loggedInUserObj = { ...loggedInUser, entries: updatedEntries };
+      const loggedInUserObj = { ...getVerifiedUser, entries: updatedEntries };
       state.verifiedUser = loggedInUserObj;
       setVerifiedUsersFunc(state.verifiedUser);
 
-      const existingUserEmail = state.users.map((user) => user.email);
-      const isEmailExist = existingUserEmail.find(
-        (email) => email === loggedInUser.email
-      );
-      console.log(existingUserEmail, isEmailExist);
-
-      if (isEmailExist) {
+      if (getVerifiedUser.email) {
         const updates = state.users.map((user) =>
-          user.email === isEmailExist ? loggedInUserObj : user
+          user.email === getVerifiedUser.email ? loggedInUserObj : user
         );
         console.log(updates);
         state.users = updates;
@@ -174,8 +178,23 @@ export const usersSlice = createSlice({
     },
 
     deleteAllEntries: (state) => {
-      state.users.entries = [];
-      localStorage.removeItem("entries");
+      const getVerifiedEntries = getVerifiedUser.entries;
+      console.log(getVerifiedEntries);
+
+      const deleteAll = { ...getVerifiedUser, entries: [] };
+      state.verifiedUser = deleteAll;
+      setVerifiedUsersFunc(state.verifiedUser);
+
+      if (getVerifiedUser) {
+        const updates = state.users.map((user) =>
+          user.email === getVerifiedUser.email ? deleteAll : user
+        );
+        console.log(updates);
+        state.entries = [];
+        setEntriesFunc(state.entries);
+        state.users = updates;
+        setUserFunc(state.users);
+      }
     },
   },
 });
@@ -184,6 +203,7 @@ export const {
   addUser,
   checkUser,
   logOut,
+  deleteAccount,
   deleteAllUsers,
   addEntry,
   deleteEntry,
