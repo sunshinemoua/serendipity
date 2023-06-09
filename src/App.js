@@ -19,6 +19,7 @@ import { v4 as uuid } from "uuid";
 import {
   addUser,
   checkUser,
+  deleteAccount,
   deleteAllUsers,
   logOut,
   addEntry,
@@ -199,6 +200,10 @@ const CreateAccount = () => {
 const EntriesForm = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.user.users);
+  const entries = useSelector((state) => state.user.entries);
+  const verifiedUser = useSelector((state) => state.user.verifiedUser);
+
+  console.log(verifiedUser.email);
 
   const {
     register,
@@ -214,6 +219,14 @@ const EntriesForm = () => {
     console.log(data.id, data);
     dispatch(addEntry(data));
     reset();
+  };
+
+  const deleteHandler = (email) => {
+    const usersCopy = [...users];
+    console.log(usersCopy);
+    const filteredUsers = usersCopy.filter((user) => user.email !== email);
+    console.log(filteredUsers);
+    dispatch(deleteAccount(filteredUsers));
   };
 
   return (
@@ -240,7 +253,7 @@ const EntriesForm = () => {
               <p>{errors.entry?.message}</p>
               <div className="btn-wrapper">
                 <button className="btn--entry-form">Add</button>
-                {users.length > 0 && (
+                {entries.length > 0 && (
                   <button
                     className="btn--entry-form"
                     onClick={() => dispatch(deleteAllEntries())}
@@ -255,6 +268,9 @@ const EntriesForm = () => {
           <EntriesList />
         </div>
       </div>
+      <button onClick={() => deleteHandler(verifiedUser.email)}>
+        Delete Account
+      </button>
     </div>
   );
 };
