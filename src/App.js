@@ -160,7 +160,6 @@ const Form = ({ header, formSchema, action }) => {
 
 const SignIn = () => {
   const dispatch = useDispatch();
-  const verifiedUser = useSelector((state) => state.user.verifiedUsers);
 
   const action = (data) => {
     dispatch(checkUser(data));
@@ -187,9 +186,11 @@ const CreateAccount = () => {
       <NavBar />
       <Form header="Sign Up" formSchema={createAccountSchema} action={action} />
 
+      {/*  **** TESTING ONLY to clear users in local storage ***
+      
       <button onClick={() => dispatch(deleteAllUsers())}>
         Delete All Users
-      </button>
+      </button> */}
     </div>
   );
 };
@@ -211,7 +212,6 @@ const EntriesForm = () => {
 
   const onSubmit = (data) => {
     data.id = uuid();
-    console.log(data.id, data);
     dispatch(addEntry(data));
     reset();
   };
@@ -267,24 +267,26 @@ const PastEntries = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <div className="form-page-outermost-div">
-        <div className="form-wrapper">
-          <h1 className="entry-form-header">All Entries</h1>
-          {entries.length > 0 ? (
-            <button
-              className="btn--past-entries"
-              onClick={() => dispatch(deleteAllEntries())}
-            >
-              Delete All Entries
-            </button>
-          ) : (
-            <p>No entries yet!</p>
-          )}
+      <div className="inner-div">
+        <div className="form-page-outermost-div">
+          <div className="form-wrapper">
+            <h1 className="entry-form-header">All Entries</h1>
+            {entries.length > 0 ? (
+              <button
+                className="btn--past-entries"
+                onClick={() => dispatch(deleteAllEntries())}
+              >
+                Delete All Entries
+              </button>
+            ) : (
+              <p>No entries yet!</p>
+            )}
 
-          <EntriesList entries={entries} />
+            <EntriesList entries={entries} />
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };
@@ -294,7 +296,7 @@ const EntriesList = ({ entries }) => {
 
   const deleteHandler = (id) => {
     const entriesCopy = [...entries, id];
-    console.log(entriesCopy);
+
     const filteredEntries = entriesCopy.filter((item) => item !== id);
     dispatch(deleteEntry(filteredEntries));
   };
@@ -329,7 +331,7 @@ const Home = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <div className="testtest">
+      <div className="inner-div">
         <EntriesForm />
         <Footer />
       </div>
@@ -363,7 +365,6 @@ const Footer = () => {
 
 const PrivateRoutes = () => {
   const isVerified = useSelector((state) => state.user.verifiedUser.verified);
-  console.log(isVerified);
 
   return isVerified ? <Outlet /> : <Navigate to="/sign-in" />;
 };

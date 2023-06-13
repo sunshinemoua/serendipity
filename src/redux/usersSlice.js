@@ -15,8 +15,6 @@ const verifiedUser =
     ? JSON.parse(localStorage.getItem("verifiedUser"))
     : false;
 
-const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
-
 const setUserFunc = (user) => {
   localStorage.setItem("users", JSON.stringify(user));
 };
@@ -66,7 +64,6 @@ export const usersSlice = createSlice({
 
     checkUser: (state, { payload }) => {
       const existingUserEmail = state.users.map((user) => user.email);
-      console.log(existingUserEmail);
 
       const isEmailExist = existingUserEmail.find(
         (email) => email === payload.email
@@ -98,7 +95,6 @@ export const usersSlice = createSlice({
     logOut: (state) => {
       const logOut = { ...verifiedUser, verified: false };
       state.verifiedUser = logOut;
-      state.entries = [];
       setVerifiedUsersFunc(state.verifiedUser);
 
       if (verifiedUser) {
@@ -107,30 +103,30 @@ export const usersSlice = createSlice({
         );
         setUserFunc(state.users);
       }
+      state.entries = [];
       localStorage.removeItem("entries");
       localStorage.removeItem("verifiedUser");
     },
 
     deleteAccount: (state, { payload }) => {
-      if (getVerifiedUser) {
+      const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
+      const confirmDelete = window.confirm("Are you sure you want to delete?");
+
+      if (getVerifiedUser && confirmDelete) {
         state.users.map((user) => {
-          if (user.email === getVerifiedUser.email && payload.length > 0) {
+          if (user.email === getVerifiedUser.email) {
             state.users = payload;
             setUserFunc(state.users);
             state.verifiedUser = { ...getVerifiedUser, verified: false };
             setVerifiedUsersFunc(state.verifiedUser);
-            localStorage.removeItem("verifiedUser");
-            localStorage.removeItem("entries");
-            console.log(payload);
-          } else {
-            state.verifiedUser = { ...getVerifiedUser, verified: false };
-            setVerifiedUsersFunc(state.verifiedUser);
-            alert("Account deleted successfully");
-            localStorage.removeItem("users");
+            state.entries = [];
+            alert("Account deleted successfully!");
             localStorage.removeItem("verifiedUser");
             localStorage.removeItem("entries");
           }
         });
+      } else {
+        alert("Sure thing! Thanks for sticking with us!");
       }
     },
 
@@ -175,15 +171,13 @@ export const usersSlice = createSlice({
         const updates = state.users.map((user) =>
           user.email === getVerifiedUser.email ? loggedInUserObj : user
         );
-        console.log(updates);
         state.users = updates;
         setUserFunc(state.users);
       }
     },
 
     deleteAllEntries: (state) => {
-      const getVerifiedEntries = getVerifiedUser.entries;
-      console.log(getVerifiedEntries);
+      const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
 
       const deleteAll = { ...getVerifiedUser, entries: [] };
       state.verifiedUser = deleteAll;
@@ -193,7 +187,6 @@ export const usersSlice = createSlice({
         const updates = state.users.map((user) =>
           user.email === getVerifiedUser.email ? deleteAll : user
         );
-        console.log(updates);
         state.entries = [];
         setEntriesFunc(state.entries);
         state.users = updates;
