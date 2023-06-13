@@ -125,6 +125,7 @@ export const usersSlice = createSlice({
           } else {
             state.verifiedUser = { ...getVerifiedUser, verified: false };
             setVerifiedUsersFunc(state.verifiedUser);
+            alert("Account deleted successfully");
             localStorage.removeItem("users");
             localStorage.removeItem("verifiedUser");
             localStorage.removeItem("entries");
@@ -141,10 +142,11 @@ export const usersSlice = createSlice({
     },
     //******* ENTRIES *******//
     addEntry: (state, { payload }) => {
+      const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
       const loggedIn = getVerifiedUser.verified;
 
       if (loggedIn) {
-        state.entries = [...getVerifiedUser.entries, payload];
+        state.entries = [payload, ...getVerifiedUser.entries];
         setEntriesFunc(state.entries);
 
         const newVerifiedObj = { ...getVerifiedUser, entries: state.entries };
@@ -158,6 +160,8 @@ export const usersSlice = createSlice({
       }
     },
     deleteEntry: (state, { payload }) => {
+      const getVerifiedUser = JSON.parse(localStorage.getItem("verifiedUser"));
+
       state.entries = payload;
       localStorage.setItem("entries", JSON.stringify(state.entries));
 

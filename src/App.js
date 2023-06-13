@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import {
   NavLink,
   BrowserRouter,
@@ -14,7 +12,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./App.scss";
 import { useDispatch, useSelector } from "react-redux";
-// import { addEntry, deleteEntry, deleteAllEntries } from "./redux/entrySlice";
 import { v4 as uuid } from "uuid";
 import {
   addUser,
@@ -199,11 +196,7 @@ const CreateAccount = () => {
 
 const EntriesForm = () => {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.user.users);
   const entries = useSelector((state) => state.user.entries);
-  const verifiedUser = useSelector((state) => state.user.verifiedUser);
-
-  console.log(verifiedUser.email);
 
   const {
     register,
@@ -214,19 +207,13 @@ const EntriesForm = () => {
     resolver: yupResolver(entrySchema),
   });
 
+  const slicedEntries = entries.slice(0, 3);
+
   const onSubmit = (data) => {
     data.id = uuid();
     console.log(data.id, data);
     dispatch(addEntry(data));
     reset();
-  };
-
-  const deleteHandler = (email) => {
-    const usersCopy = [...users];
-    console.log(usersCopy);
-    const filteredUsers = usersCopy.filter((user) => user.email !== email);
-    console.log(filteredUsers);
-    dispatch(deleteAccount(filteredUsers));
   };
 
   return (
@@ -243,11 +230,12 @@ const EntriesForm = () => {
                 {...register("feeling")}
                 placeholder="How are you feeling?"
               />
+
               <p>{errors.feeling?.message}</p>
               <textarea
                 type="text"
                 {...register("entry")}
-                placeholder="Say something..."
+                placeholder="Why are you feeling this way?"
                 rows="10"
               />
               <p>{errors.entry?.message}</p>
@@ -265,19 +253,16 @@ const EntriesForm = () => {
             </label>
           </form>
 
-          <EntriesList />
+          <EntriesList entries={slicedEntries} />
         </div>
       </div>
-      <button onClick={() => deleteHandler(verifiedUser.email)}>
-        Delete Account
-      </button>
     </div>
   );
 };
 
 const PastEntries = () => {
   const dispatch = useDispatch();
-  const entry = useSelector((state) => state.user.entries);
+  const entries = useSelector((state) => state.user.entries);
 
   return (
     <div className="page-wrapper">
@@ -285,7 +270,7 @@ const PastEntries = () => {
       <div className="form-page-outermost-div">
         <div className="form-wrapper">
           <h1 className="entry-form-header">All Entries</h1>
-          {entry.length > 0 ? (
+          {entries.length > 0 ? (
             <button
               className="btn--past-entries"
               onClick={() => dispatch(deleteAllEntries())}
@@ -296,19 +281,16 @@ const PastEntries = () => {
             <p>No entries yet!</p>
           )}
 
-          <EntriesList entry={entry} />
+          <EntriesList entries={entries} />
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
 
-const EntriesList = () => {
+const EntriesList = ({ entries }) => {
   const dispatch = useDispatch();
-  const test = useSelector((state) => state.user.verifiedUser.entries);
-  const entries = useSelector((state) => state.user.entries);
-
-  console.log(entries, test);
 
   const deleteHandler = (id) => {
     const entriesCopy = [...entries, id];
@@ -318,13 +300,18 @@ const EntriesList = () => {
   };
 
   const mappedEntries = entries.map((item) => {
+    const formattedDate = new Date(item.date).toLocaleDateString("en-us");
+
     return (
       <div key={item.id}>
         <div className="item-wrapper">
-          <li>
-            I'm feeling <span>{item.feeling}</span> because . . .
-            <p>{item.entry}</p>
-          </li>
+          <div className="entry-div">
+            <li>{formattedDate}</li>
+            <div className="feeling-entry">
+              I'm feeling <span>{item.feeling}</span> because . . .
+              <p>{item.entry}</p>
+            </div>
+          </div>
           {deleteHandler !== null && (
             <button className="btn" onClick={() => deleteHandler(item)}>
               Delete
@@ -334,6 +321,7 @@ const EntriesList = () => {
       </div>
     );
   });
+
   return <div>{mappedEntries}</div>;
 };
 
@@ -341,7 +329,34 @@ const Home = () => {
   return (
     <div className="page-wrapper">
       <NavBar />
-      <EntriesForm />
+      <div className="testtest">
+        <EntriesForm />
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+const Footer = () => {
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.user.users);
+  const verifiedUser = useSelector((state) => state.user.verifiedUser);
+
+  const deleteHandler = (email) => {
+    const usersCopy = [...users];
+    const filteredUsers = usersCopy.filter((user) => user.email !== email);
+    dispatch(deleteAccount(filteredUsers));
+  };
+
+  return (
+    <div className="footer">
+      &copy; 2023 Sunshine Moua
+      <button
+        className="delete-btn"
+        onClick={() => deleteHandler(verifiedUser.email)}
+      >
+        Delete Account
+      </button>
     </div>
   );
 };
